@@ -38,20 +38,18 @@ kubectl describe clustersecretstore/azure-cluster-store
 ## 009
 # Validate that the external secret was retrieved
 kubectl logs deployment/external-secrets -n external-secrets --tail=1
-
-## 010
 # Query the ExternalSecret resource
 kubectl get ExternalSecret/external-secret -n default
 
-## 011
+## 010
 # Query the details for the ExternalSecret resource
 kubectl describe ExternalSecret/external-secret -n default
 
-## 012
+## 011
 # Get the Kubernetes Secret resource
 kubectl get secret/external-secret -n default -o yaml
 
-## 013
+## 012
 # If using Windows Powershell :(
 $SECRET=[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String((kubectl get secret/external-secret -n default -o jsonpath='{.data.external-secret}')))
 $SECRET
@@ -66,15 +64,15 @@ az keyvault secret show --vault-name <YOUR KEYVAULT NAME> -n external-keyvault-s
 # Secret should match!!
 T0pS3cr3t:)
 
-## 014
+## 013
 # Set the secret value to MyNewValue
 az keyvault secret set --vault-name <YOUR KEYVAULT NAME> -n external-keyvault-secret --value MyNewValue
 
-## 015
+## 014
 # Query the details for the ExternalSecret resource
 kubectl describe ExternalSecret/external-secret -n default
 
-## 016
+## 015
 # If using Windows Powershell :(
 $SECRET=[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String((kubectl get secret/external-secret -n default -o jsonpath='{.data.external-secret}')))
 $SECRET
@@ -85,5 +83,5 @@ echo $SECRET
 # Secret should be shown
 MyNewValue
 
-## 017
+## 016
 terraform destroy
