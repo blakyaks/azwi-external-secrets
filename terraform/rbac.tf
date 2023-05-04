@@ -14,6 +14,12 @@ resource "azurerm_federated_identity_credential" "external_secrets" {
   subject             = "system:serviceaccount:external-secrets:workload-identity-sa"
 }
 
+resource "azurerm_role_assignment" "self_keyvault_admin" {
+  scope                = azurerm_key_vault.this.id
+  role_definition_name = "Key Vault Administrator"
+  principal_id         = data.azurerm_client_config.this.object_id
+}
+
 resource "azurerm_role_assignment" "external_secrets_keyvault_admin" {
   scope                = azurerm_key_vault.this.id
   role_definition_name = "Key Vault Administrator"

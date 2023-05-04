@@ -1,0 +1,89 @@
+## 001
+# Output the OIDC issuer URL
+az aks show --resource-group <resource_group> --name <cluster_name> --query "oidcIssuerProfile.issuerUrl" -o tsv
+
+## 002
+helm repo add azure-workload-identity https://azure.github.io/azure-workload-identity/charts
+helm repo update
+helm install workload-identity-webhook azure-workload-identity/workload-identity-webhook \
+   --namespace workload-identity-system \
+   --create-namespace \
+   --set azureTenantID="${AZURE_TENANT_ID}"
+
+## 003
+kubectl get pod -n workload-identity-system
+
+## 004
+az login
+az account set -s <YOUR TARGET SUBSCRIPTION NAME>
+
+## 005
+terraform init
+terraform apply
+
+## 006
+# Show Current Context
+kubectl config current-context
+# Set Context if required
+az aks get-credentials --resource-group <AKS RESOURCE GROUP> --name <AKS CLUSTER NAME>
+
+## 007
+# Show External-Secrets Helm Deployment Status
+kubectl get deployment external-secrets -n external-secrets
+
+## 008
+# Show the ClusterSecretStore resource
+kubectl describe clustersecretstore/azure-cluster-store
+
+## 009
+# Validate that the external secret was retrieved
+kubectl logs deployment/external-secrets -n external-secrets --tail=1
+
+## 010
+# Query the ExternalSecret resource
+kubectl get ExternalSecret/external-secret -n default
+
+## 011
+# Query the details for the ExternalSecret resource
+kubectl describe ExternalSecret/external-secret -n default
+
+## 012
+# Get the Kubernetes Secret resource
+kubectl get secret/external-secret -n default -o yaml
+
+## 013
+# If using Windows Powershell :(
+$SECRET=[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String((kubectl get secret/external-secret -n default -o jsonpath='{.data.external-secret}')))
+$SECRET
+# If using bash :)
+SECRET=$($(echo kubectl get secret/external-secret -n default -o jsonpath='{.data.external-secret}') | base64 -d)
+echo $SECRET
+# Secret should be shown
+T0pS3cr3t:)
+
+# Confirm this matches the secret stored in the vault
+az keyvault secret show --vault-name <YOUR KEYVAULT NAME> -n external-keyvault-secret --query value -o tsv
+# Secret should match!!
+T0pS3cr3t:)
+
+## 014
+# Set the secret value to MyNewValue
+az keyvault secret set --vault-name <YOUR KEYVAULT NAME> -n external-keyvault-secret --value MyNewValue
+
+## 015
+# Query the details for the ExternalSecret resource
+kubectl describe ExternalSecret/external-secret -n default
+
+## 016
+# If using Windows Powershell :(
+$SECRET=[System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String((kubectl get secret/external-secret -n default -o jsonpath='{.data.external-secret}')))
+$SECRET
+# If using bash :)
+SECRET=$($(echo kubectl get secret/external-secret -n default -o jsonpath='{.data.external-secret}') | base64 -d)
+echo $SECRET
+
+# Secret should be shown
+MyNewValue
+
+## 017
+terraform destroy

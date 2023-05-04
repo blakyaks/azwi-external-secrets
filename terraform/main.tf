@@ -32,6 +32,7 @@ resource "azurerm_key_vault_secret" "this" {
   name         = "external-keyvault-secret"
   value        = "T0pS3cr3t:)"
   key_vault_id = azurerm_key_vault.this.id
+  depends_on   = [azurerm_role_assignment.self_keyvault_admin]
 }
 
 resource "helm_release" "external_secrets_operator" {
@@ -76,7 +77,8 @@ resource "kubectl_manifest" "cluster_secret_store" {
   force_new = true
   depends_on = [
     kubernetes_service_account_v1.workload_identity,
-    helm_release.external_secrets_operator
+    helm_release.external_secrets_operator,
+    azurerm_role_assignment.external_secrets_keyvault_admin
   ]
 }
 
